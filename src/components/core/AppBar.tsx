@@ -1,5 +1,5 @@
 import { AppBar as MuiAppBar, Toolbar, Avatar, Box } from '@mui/material';
-
+import Avatar1 from '../../assets/Img_Avatar.25.png';
 
 export const AppBar = () => {
   return (
@@ -31,7 +31,8 @@ export const AppBar = () => {
         >
           <Avatar
             alt="Usuário"
-            src="src\assets\Img_Avatar.25.png"
+            src=
+            {Avatar1}
             sx={{
               width: 40,
               height: 40,

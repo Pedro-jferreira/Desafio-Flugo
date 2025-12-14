@@ -1,73 +1,115 @@
-# React + TypeScript + Vite
+# 🚀 Flugo Dashboard - Desafio Front-end
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 
-Currently, two official plugins are available:
+Uma aplicação profissional de gestão de colaboradores desenvolvida como solução para o desafio técnico Front-end da Flugo. O projeto implementa um sistema de listagem com performance otimizada e um formulário de cadastro multi-etapa (Wizard), focando em UX, Clean Code e fidelidade ao design system.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔗 **[Acessar Demonstração Online (Live Demo)](https://desafio-funcionarios.web.app/)**
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📋 Sobre o Desafio
 
-## Expanding the ESLint configuration
+O objetivo foi desenvolver uma aplicação Single Page Application (SPA) seguindo um protótipo Figma rigoroso, contendo:
+* **Formulário Multi-step:** Cadastro dividido em etapas lógicas.
+* **UI/UX:** Fidelidade visual ao [Protótipo Figma](https://www.figma.com/proto/r7xOsboMOQlMpEx8D5kH3a/Desafio-Flugo).
+* **Stack:** ReactJS + TypeScript + Material UI.
+* **Backend:** Persistência de dados via Firebase.
+* **Deploy:** Hospedagem em servidor remoto.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Funcionalidades Implementadas
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Listagem de Colaboradores (Employees List)
+* **🔄 Infinite Scroll:** Carregamento de dados sob demanda ao rolar a página (substituindo a paginação tradicional para melhor experiência mobile).
+* **Sorter Interativo:** Ordenação dinâmica (Backend-side) por Nome, Email ou Departamento.
+* **Feedback Visual:** Uso de *Skeletons* durante o carregamento e tratamento de erros amigável.
+* **Avatares Dinâmicos:** Geração visual sequencial de avatares na listagem.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 2. Cadastro (Wizard Form)
+* **📍 Navegação por Etapas:** Separação clara entre "Informações Básicas" e "Informações Profissionais".
+* **🛡️ Validação Robusta:** Uso de **Zod** + **React Hook Form**.
+  * Validação de formato de e-mail.
+  * Campos obrigatórios.
+  * Verificação em tempo real.
+* **🚫 Prevenção de Duplicidade:** O sistema verifica automaticamente no Firebase se o e-mail já existe antes de salvar, retornando feedback visual e levando o usuário ao campo com erro.
+* **💾 Persistência:** Dados salvos em tempo real no **Firebase Firestore**.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tecnologias Utilizadas
+
+O projeto utiliza uma stack moderna (2025 ready):
+
+| Categoria | Tecnologia | Descrição |
+| :--- | :--- | :--- |
+| **Core** | [React 19](https://react.dev/) | Biblioteca UI moderna. |
+| **Build Tool** | [Vite](https://vitejs.dev/) | Ambiente de desenvolvimento ultra-rápido. |
+| **Linguagem** | [TypeScript](https://www.typescriptlang.org/) | Superset JS para tipagem estática e segurança. |
+| **UI Framework** | [Material UI](https://mui.com/) | Componentes de interface baseados no Material Design. |
+| **Gerência de Estado** | [React Hook Form](https://react-hook-form.com/) | Controle de formulários performático e sem re-renders desnecessários. |
+| **Validação** | [Zod](https://zod.dev/) | Schema Validation integrado ao TypeScript. |
+| **Backend/DB** | [Firebase](https://firebase.google.com/) | Firestore (NoSQL) e Hosting. |
+| **Notificações** | [Notistack](https://notistack.com/) | Sistema de Toasts (Snackbars) empilháveis. |
+| **Roteamento** | [React Router v7](https://reactrouter.com/) | Navegação SPA. |
+
+## 🚀 Como rodar o projeto localmente
+
+Siga os passos abaixo para clonar e executar a aplicação na sua máquina.
+
+### Pré-requisitos
+* [Node.js](https://nodejs.org/) (Versão 18+ recomendada).
+* Git instalado.
+
+### Passo a Passo
+
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/SEU-USUARIO/desafio-funcionarios.git](https://github.com/SEU-USUARIO/desafio-funcionarios.git) 
+   ```
+
+2. **Acesse a pasta do projeto:**
+
+   ```bash
+   cd desafio-funcionarios
+    ```
+3. **Instale as dependências:**
+
+   ```bash
+   npm install
+   ```
+4. **Execute o servidor de desenvolvimento:**
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Acesse no navegador:** O terminal irá mostrar o link local, geralmente: http://localhost:5173
+
+### Build para Produção
+Para gerar a versão otimizada para deploy na pasta dist:
+
+ ```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📂 Estrutura do Projeto
+A arquitetura foi pensada para escalabilidade, separando responsabilidades e utilizando termos em inglês (padrão de mercado):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```Plaintext
+src/
+├── assets/             # Imagens e ícones estáticos
+├── components/         # Componentes React reutilizáveis
+│   ├── add_employees/  # Componentes específicos do Wizard de cadastro
+│   ├── core/           # Componentes base (ex: IOSSwitch customizado)
+│   └── employees/      # Componentes da listagem (Tabela, Linhas)
+├── hooks/              # Custom Hooks (useEmployees, useAddEmployee)
+├── pages/              # Páginas da aplicação (EmployeesPage, AddEmployeePage)
+├── services/           # Camada de comunicação com Firebase
+├── theme/              # Customização do tema Material UI
+├── types.ts            # Interfaces e Tipos TypeScript globais
+└── main.tsx            # Ponto de entrada da aplicação
 ```
+
+Desenvolvido por Pedro Ferreira 👨‍🍳💻
