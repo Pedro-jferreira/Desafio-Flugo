@@ -66,7 +66,7 @@ Siga os passos abaixo para clonar e executar a aplicação na sua máquina.
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/SEU-USUARIO/desafio-funcionarios.git](https://github.com/SEU-USUARIO/desafio-funcionarios.git) 
+   git clone https://github.com/Pedro-jferreira/Desafio-Flugo.git
    ```
 
 2. **Acesse a pasta do projeto:**
