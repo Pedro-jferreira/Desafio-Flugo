@@ -44,7 +44,6 @@ export const AddEmployeePage = () => {
 
     if (isValid) {
       if (activeStep === steps.length - 1) {
-        // --- TENTATIVA DE SALVAR ---
         const data = methods.getValues();
 
         try {
@@ -99,22 +98,25 @@ export const AddEmployeePage = () => {
       >
         <AddEmployeeHeader progress={progress} />
 
-        <Box sx={{ mt: '39px' }} />
+      
 
         <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            gap: '40px',
+            gap:  { xs: '10px', md: '40px' },
             width: '100%',
+            mt: {xs: '20px',md:'39px'},
+            flex: { xs: 1, md: 'none' },
           }}
         >
           <Box
             sx={{
-              height: '440px',
+              height: { md:'440px'},
               display: 'flex',
               alignItems: 'flex-start',
               flexShrink: 0,
+               mb: {xs: '15px'},
             }}
           >
             <StepSidebar activeStep={activeStep} steps={steps} />
@@ -122,9 +124,9 @@ export const AddEmployeePage = () => {
 
           <Box
             sx={{
-              flex: 1,
+             flex: 1,
+            height: { xs: 'auto', md: '440px' },
               minWidth: 0,
-              height: '440px',
               display: 'flex',
               flexDirection: 'column',
             }}

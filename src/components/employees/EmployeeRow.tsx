@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Avatar, Typography, Box, Chip } from '@mui/material';
+import { TableRow, TableCell, Avatar, Typography, Box, Chip, Tooltip, useTheme, alpha } from '@mui/material';
 import { Status, type Employee as Employee } from '../../types';
 
 import Avatar1 from '../../assets/Img_Avatar.1.png';
@@ -7,7 +7,7 @@ import Avatar4 from '../../assets/Img_Avatar.4.png';
 import Avatar5 from '../../assets/Img_Avatar.5.png';
 
 
-const AVATARS = [Avatar1 , Avatar3, Avatar4, Avatar5];
+const AVATARS = [Avatar1, Avatar3, Avatar4, Avatar5];
 
 interface EmployeeRowProps {
   data: Employee;
@@ -15,56 +15,72 @@ interface EmployeeRowProps {
 }
 
 export const EmployeeRow = ({ data, index }: EmployeeRowProps) => {
+  const theme = useTheme();
   const avatarImage = data.avatarUrl || AVATARS[index % AVATARS.length];
-  const getStatusColor = (status: Status) => {
-    if (status === Status.ATIVO) {
-      return {
-        bg: '#22C55E29', 
-        color: '#118D57' 
-      };
-    }
+
+const getStatusStyles = (status: Status) => {
+    // Define qual cor base usar (Sucesso ou Erro) vindo do tema
+    const mainColor = status === Status.ATIVO 
+      ? theme.palette.success.main 
+      : theme.palette.error.main;
+
     return {
-      bg: '#FF563029', 
-      color: '#B71D18' 
+      color: mainColor,
+      bg: alpha(mainColor, 0.16) 
     };
   };
 
-  const statusStyle = getStatusColor(data.status);
+  const statusStyle = getStatusStyles(data.status);
 
   return (
-    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-
+    <TableRow   sx={{backgroundColor: 'background.paper', '&:last-child td, &:last-child th': { border: 0 } }}>
       <TableCell component="th" scope="row">
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar alt={data.name} src={avatarImage} />
-          <Typography variant="body2"  color="#212B36">
-            {data.name}
-          </Typography>
+
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Tooltip title={data.name} arrow placement="top-start">
+              <Typography
+                variant="body2"
+                color="text.primary"
+                noWrap
+              >
+                {data.name}
+              </Typography>
+            </Tooltip>
+          </Box>
         </Box>
       </TableCell>
 
       <TableCell>
-        <Typography variant="body2" color="#212B36">
-          {data.email}
-        </Typography>
+        <Tooltip title={data.email} arrow placement="top-start">
+          <Typography
+            variant="body2"
+            color="text.primary"
+            noWrap
+          >
+            {data.email}
+          </Typography>
+        </Tooltip>
       </TableCell>
 
       <TableCell>
-        <Typography variant="body2" color="#212B36">
+        <Typography variant="body2"
+          color="text.primary" noWrap>
           {data.department}
         </Typography>
       </TableCell>
 
-      <TableCell align="right"> 
-        <Chip 
-          label={data.status} 
+      <TableCell align="right">
+        <Chip
+          label={data.status}
           size="small"
           sx={{
             backgroundColor: statusStyle.bg,
             color: statusStyle.color,
             fontWeight: 'bold',
-            borderRadius: '6px', 
-            minWidth: '51px'
+            borderRadius: '6px',
+            minWidth: '70px'
           }}
         />
       </TableCell>

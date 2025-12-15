@@ -8,7 +8,8 @@ import {
   startAfter, 
   type DocumentData, 
   QueryDocumentSnapshot, 
-  where
+  where,
+  serverTimestamp
 } from "firebase/firestore";
 
 import type { Employee } from "../types"; 
@@ -29,18 +30,21 @@ export interface FetchOptions {
 }
 
 export const EmployeeService = {
-  create: async (colaborador: Omit<Employee, 'id'>): Promise<string> => {
+  create: async (employee: Omit<Employee, 'id'>): Promise<string> => {
     try {
       const colRef = collection(db, COLLECTION_NAME);
 
-      const q = query(colRef, where("email", "==", colaborador.email));
+      const q = query(colRef, where("email", "==", employee.email));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
         throw new Error("EMAIL_DUPLICADO");
       }
 
-      const docRef = await addDoc(colRef, colaborador);
+      const docRef = await addDoc(colRef, {
+        ...employee,
+        createdAt: serverTimestamp()
+      });
       return docRef.id;
     } catch (error) {
       console.error("Erro ao criar colaborador:", error);
@@ -51,8 +55,8 @@ export const EmployeeService = {
   getAll: async ({
     pageSize = 10,
     lastVisible = null,
-    sortField = 'name',
-    order = 'asc'
+    sortField = 'createdAt',
+    order = 'desc'
   }: FetchOptions): Promise<PaginatedResult> => {
     try {
       const colRef = collection(db, COLLECTION_NAME);

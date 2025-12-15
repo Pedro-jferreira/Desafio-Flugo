@@ -26,7 +26,7 @@ export const Sidebar = () => {
           width: drawerWidth,
           boxSizing: 'border-box',
           borderRight: '1px dashed #919EAB33',
-          backgroundColor: 'background.paper',
+          backgroundColor: 'background.default',
           paddingX: '16px',
         },
       }}

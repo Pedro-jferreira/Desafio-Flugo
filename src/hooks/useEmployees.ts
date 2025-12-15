@@ -7,13 +7,15 @@ export type SortField = keyof Employee;
 export type OrderDirection = 'asc' | 'desc';
 
 export const useEmployees = () => {
-  const [colaboradores, setColaboradores] = useState<Employee[]>([]);
+ const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true); 
-  const [orderByField, setOrderByField] = useState<SortField>('status');
+  
+  // MUDANÇA 1: Começa como NULL (sem setinha na tabela)
+  const [orderByField, setOrderByField] = useState<SortField | null>(null);
   const [orderDirection, setOrderDirection] = useState<OrderDirection>('asc');
 
   const fetchEmployees = useCallback(async (isLoadMore = false) => {
@@ -22,12 +24,14 @@ export const useEmployees = () => {
 
     try {
       const cursor = isLoadMore ? lastDoc : null;
+      const actualSortField = orderByField || 'createdAt';
+      const actualOrderDirection = orderByField ? orderDirection : 'desc';
 
       const result = await EmployeeService.getAll({
         pageSize: 10,
         lastVisible: cursor,
-        sortField: orderByField,
-        order: orderDirection
+        sortField: actualSortField,
+        order: actualOrderDirection
       });
 
       setLastDoc(result.lastVisible);
@@ -38,11 +42,11 @@ export const useEmployees = () => {
         setHasMore(true);
       }
 
-      setColaboradores((prev) => {
+      setEmployees((prev) => {
         if (isLoadMore) {
           return [...prev, ...result.data];
         } else {
-          return result.data; 
+          return result.data;
         }
       });
 
@@ -77,11 +81,11 @@ export const useEmployees = () => {
   };
 
   return {
-    colaboradores,
+    employees, 
     loading,
     error,
     hasMore,
-    orderByField,
+    orderByField, 
     orderDirection,
     handleSort,
     loadMore,
@@ -98,7 +102,7 @@ export const useAddEmployee = () => {
     setError(null);
     try {
       const id = await EmployeeService.create(colaborador);
-      return id; 
+      return id;
     } catch (err) {
       setError('Erro ao criar colaborador.');
       throw err;

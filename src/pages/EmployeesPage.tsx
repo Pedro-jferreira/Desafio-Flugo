@@ -8,7 +8,7 @@ import { ColaboradoresTable } from '../components/employees/EmployeesTable';
 export const EmployeesPage = () => {
   const navigate = useNavigate();
   const { 
-    colaboradores, 
+    employees, 
     loading, 
     error,              
     orderByField, 
@@ -19,11 +19,11 @@ export const EmployeesPage = () => {
   } = useEmployees();
 
   return (
-    <Box sx={{ width: '100%', my: '35px' }}> 
+    <Box sx={{ width: '100%', my: { xs: 1, md: '35px' } }}> 
       <Stack spacing={5}>
         <EmployeesHeader onNewClick={() => navigate('/adicionar')} />
         <ColaboradoresTable 
-          employees={colaboradores}
+          employees={employees}
           isLoading={loading}
           error={error}
           orderBy={orderByField}

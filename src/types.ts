@@ -23,4 +23,5 @@ export interface Employee {
   department: Department;
   status: Status;
   avatarUrl?: string;
+  createdAt?: any;
 }

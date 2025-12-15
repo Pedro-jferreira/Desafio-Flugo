@@ -3,10 +3,21 @@ import type { ColaboradorSchemaType } from "../../schema";
 import { FormControl, FormControlLabel, FormHelperText, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { IOSSwitch } from "../core/IOSSwitch";
 import { Department } from "../../types";
+import { useRef } from "react";
 
 export const BasicInfoStep = () => {
   const { register, control, formState: { errors } } = useFormContext<ColaboradorSchemaType>();
 
+  const emailRef = useRef<HTMLInputElement | null>(null);
+
+  const { ref: emailRhfRef, ...emailRest } = register('email');
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Impede o envio do formulário
+      emailRef.current?.focus(); // Joga o foco para o email
+    }
+  };
   return (
     <Stack spacing={3}>
       <Typography variant="h4" color="text.secondary">
@@ -22,6 +33,12 @@ export const BasicInfoStep = () => {
         {...register('name')}
         error={!!errors.name}
         helperText={errors.name?.message}
+        onKeyDown={handleNameKeyDown} 
+        slotProps={{
+            htmlInput: { 
+                enterKeyHint: 'next' 
+            }
+        }}
       />
 
       <TextField
@@ -30,12 +47,20 @@ export const BasicInfoStep = () => {
         variant="outlined"
         placeholder="e.g. john@gmail.com"
         InputLabelProps={{ shrink: true }}
-
-        // CONEXÃO RHF
-        {...register('email')}
-
         error={!!errors.email}
         helperText={errors.email?.message}
+        {...emailRest} 
+        
+        inputRef={(e) => {
+            emailRhfRef(e); 
+            emailRef.current = e; 
+        }}
+
+        slotProps={{
+            htmlInput: { 
+                enterKeyHint: 'done' 
+            }
+        }}
       />
 
       <Controller

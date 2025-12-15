@@ -22,7 +22,7 @@ interface EmployeesTableProps {
   employees: Employee[];
   isLoading: boolean;
   error?: string | null;     // Novo: Prop de erro
-  orderBy: SortField;        // Novo: Qual campo está ordenado
+  orderBy: SortField | null;        // Novo: Qual campo está ordenado
   orderDirection: OrderDirection; // Novo: Direção
   onSort: (field: SortField) => void; // Novo: Função para ordenar
   onLoadMore: () => void;    // Novo: Função para carregar mais
@@ -109,7 +109,6 @@ export const ColaboradoresTable = ({
       elevation={0}
       sx={{
      
-        border: '1px solid #EAECF0',
         borderRadius: '16px',
         width: '100%',
         boxShadow: '0px 0px 2px 0px rgba(145, 158, 171, 0.20), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)'
@@ -123,7 +122,7 @@ export const ColaboradoresTable = ({
         }}
         aria-label="tabela de colaboradores"
       >
-        <TableHead sx={{ backgroundColor: '#F4F6F8' }}>
+        <TableHead sx={{ backgroundColor: 'background.neutral' }}>
           <TableRow>
             <TableCell sx={{ width: '30%' }}><HeaderItem label="Nome" property="name" /></TableCell>
             <TableCell sx={{ width: '30%' }}><HeaderItem label="Email" property="email" /></TableCell>
