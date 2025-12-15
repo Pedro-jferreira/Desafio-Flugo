@@ -14,8 +14,14 @@ export const BasicInfoStep = () => {
 
   const handleNameKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Impede o envio do formulário
-      emailRef.current?.focus(); // Joga o foco para o email
+      e.preventDefault(); 
+      emailRef.current?.focus(); 
+    }
+  };
+  const handleEmailKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); 
+      (e.target as HTMLInputElement).blur(); 
     }
   };
   return (
@@ -55,6 +61,7 @@ export const BasicInfoStep = () => {
             emailRhfRef(e); 
             emailRef.current = e; 
         }}
+        onKeyDown={handleEmailKeyDown}
 
         slotProps={{
             htmlInput: { 

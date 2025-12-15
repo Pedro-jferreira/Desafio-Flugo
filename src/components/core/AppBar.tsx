@@ -1,4 +1,4 @@
-import { AppBar as MuiAppBar, Toolbar, Avatar, Box, Typography, Divider, MenuItem, ListItemIcon, Menu } from '@mui/material';
+import { AppBar as MuiAppBar, Toolbar, Avatar, Box, Typography, Divider, MenuItem, ListItemIcon, Menu, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import Avatar1 from '../../assets/Img_Avatar.25.png';
 import { useAppTheme } from '../../theme/ThemeContext';
 import { useState } from 'react';
@@ -7,6 +7,8 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
+import MenuIcon from '@mui/icons-material/Menu';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export const AppBar = () => {
   const { mode, toggleTheme } = useAppTheme();
@@ -26,7 +28,18 @@ export const AppBar = () => {
     toggleTheme(newMode);
     handleClose();
   };
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleNavigate = () => {
+    setMobileOpen(false);
+  };
   return (
+    <>
     <MuiAppBar
     position="static"
       elevation={0}
@@ -41,6 +54,15 @@ export const AppBar = () => {
       }}
     >
       <Toolbar sx={{ px: { xs: 2, md: 5 }, }}>
+        <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: 'none' }, color: 'text.primary' }}
+          >
+            <MenuIcon />
+          </IconButton>
         <Box sx={{ flexGrow: 1 }} />
 
         <Box
@@ -146,5 +168,70 @@ export const AppBar = () => {
 
       </Toolbar>
     </MuiAppBar>
+    <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Melhor desempenho no mobile
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' }, // Só existe no mobile
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
+            width: 280, // Largura do menu lateral
+            p: 2,
+            backgroundColor: 'background.paper'
+          },
+        }}
+      >
+        <Box sx={{ mb: 4, px: 1 }}>
+           {/* Logo ou Título do Menu */}
+           <Typography variant="h5" fontWeight="bold" color="primary">Flugo</Typography>
+        </Box>
+
+        <List>
+          {/* --- O ITEM QUE VOCÊ PEDIU --- */}
+          <ListItemButton
+            onClick={() => handleNavigate()} // Navega para Home
+            sx={{
+              borderRadius: '8px',
+              backgroundColor: 'action.selected', // Deixa marcado como ativo
+              mb: 1,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: '40px' }}>
+              <img
+                src={Avatar1}
+                alt="Ícone Colaboradores"
+                style={{ width: '20px', height: '20px' }}
+              />
+            </ListItemIcon>
+
+            <ListItemText
+              primary="Colaboradores"
+              primaryTypographyProps={{
+                variant: 'subtitle1',
+                // No menu ativo, a cor costuma ser primary ou text.primary
+                color: 'text.primary', 
+                fontWeight: 'bold'
+              }}
+            />
+
+            <KeyboardArrowRightIcon
+              sx={{
+                color: 'text.secondary',
+                fontSize: 20
+              }}
+            />
+          </ListItemButton>
+          
+          {/* Você pode adicionar mais itens aqui futuramente */}
+        </List>
+      </Drawer>
+    </>
   );
 };

@@ -10,7 +10,7 @@ export const MainLayout = () => {
       display: 'flex',
       width: '100%',
       height: { xs: 'auto', md: '100vh' },
-      minHeight: { xs: '100vh', md: 'unset' },
+      minHeight: { xs: '100dvh', md: 'unset' },
 
       overflow: { xs: 'visible', md: 'hidden' }
     }}>

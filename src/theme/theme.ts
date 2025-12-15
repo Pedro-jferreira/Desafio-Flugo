@@ -125,6 +125,16 @@ export const createAppTheme = (mode: PaletteMode) => createTheme({
 
     MuiOutlinedInput: {
       styleOverrides: {
+        input: {
+        '&:-webkit-autofill': {
+       
+          WebkitBoxShadow: `0 0 0 100px ${mode === 'light' ? '#d5f1e0ff' : '#212B36'} inset`,
+          WebkitTextFillColor: mode === 'light' ? '#212B36' : '#FFFFFF',
+            borderRadius: '8px',
+            border: '2px solid transparent', 
+    backgroundClip: 'content-box',
+        },
+      },
         root: {
           borderRadius: '8px', 
           
