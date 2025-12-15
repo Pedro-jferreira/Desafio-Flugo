@@ -1,5 +1,6 @@
 import { AppBar as MuiAppBar, Toolbar, Avatar, Box, Typography, Divider, MenuItem, ListItemIcon, Menu, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import Avatar1 from '../../assets/Img_Avatar.25.png';
+import Logo from '../../assets/flugo_logo 1.svg';
 import { useAppTheme } from '../../theme/ThemeContext';
 import { useState } from 'react';
 
@@ -40,21 +41,21 @@ export const AppBar = () => {
   };
   return (
     <>
-    <MuiAppBar
-    position="static"
-      elevation={0}
-      sx={{
-        width:'100%',
-        height: '80px',
-        backgroundColor: 'background.default',
-        boxShadow: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-      }}
-    >
-      <Toolbar sx={{ px: { xs: 2, md: 5 }, }}>
-        <IconButton
+      <MuiAppBar
+        position="static"
+        elevation={0}
+        sx={{
+          width: '100%',
+          height: '80px',
+          backgroundColor: 'background.default',
+          boxShadow: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}
+      >
+        <Toolbar sx={{ px: { xs: 2, md: 5 }, }}>
+          <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
@@ -63,140 +64,145 @@ export const AppBar = () => {
           >
             <MenuIcon />
           </IconButton>
-        <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: 1 }} />
 
-        <Box
-        onClick={handleClick}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '50%',
-            border: '2px solid #919EAB14',
-            padding: '3px',
-            cursor: 'pointer',
-          }}
-        >
-          <Avatar
-            alt="Usuário"
-            src=
-            {Avatar1}
+          <Box
+            onClick={handleClick}
             sx={{
-              width: 40,
-              height: 40,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              border: '2px solid #919EAB14',
+              padding: '3px',
+              cursor: 'pointer',
             }}
-          />
-        </Box>
-{/* --- O MENU OVERLAY --- */}
-        <Menu
-          anchorEl={anchorEl}
-          id="account-menu"
-          open={open}
-          onClose={handleClose}
-          onClick={handleClose}
-          
-          // Ajustes visuais para parecer um "Pop-up" moderno
-          PaperProps={{
-            elevation: 0,
-            sx: {
-              overflow: 'visible',
-              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-              mt: 1.5,
-              width: 220, // Largura fixa boa para menus
-              
-              // Triângulozinho (seta) apontando para o avatar
-              '&:before': {
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                top: 0,
-                right: 24, // Posição da seta
-                width: 10,
-                height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
-              },
-            },
-          }}
-          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        >
-          {/* Cabeçalho do Menu */}
-          <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography variant="subtitle2" noWrap>
-              Pedro Ferreira
-            </Typography>
-            <Typography variant="body2" color="text.secondary" noWrap>
-              pedro@flugo.com.br
-            </Typography>
+          >
+            <Avatar
+              alt="Usuário"
+              src=
+              {Avatar1}
+              sx={{
+                width: 40,
+                height: 40,
+              }}
+            />
           </Box>
-          
-          <Divider />
+          {/* --- O MENU OVERLAY --- */}
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
 
-          {/* Opções de Tema */}
-          <MenuItem onClick={() => handleThemeChange('light')} selected={mode === 'light'}>
-            <ListItemIcon>
-              <LightModeIcon fontSize="small" />
-            </ListItemIcon>
-            Modo Claro
-          </MenuItem>
+            // Ajustes visuais para parecer um "Pop-up" moderno
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                mt: 1.5,
+                width: 220, // Largura fixa boa para menus
 
-          <MenuItem onClick={() => handleThemeChange('dark')} selected={mode === 'dark'}>
-            <ListItemIcon>
-              <DarkModeIcon fontSize="small" />
-            </ListItemIcon>
-            Modo Escuro
-          </MenuItem>
+                // Triângulozinho (seta) apontando para o avatar
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 24, // Posição da seta
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            {/* Cabeçalho do Menu */}
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography variant="subtitle2" noWrap>
+                Pedro Ferreira
+              </Typography>
+              <Typography variant="body2" color="text.secondary" noWrap>
+                pedro@flugo.com.br
+              </Typography>
+            </Box>
 
-          <Divider />
-          
-           <MenuItem onClick={handleClose}>
-            <ListItemIcon>
-              <SettingsIcon fontSize="small" />
-            </ListItemIcon>
-            Configurações
-          </MenuItem>
+            <Divider />
 
-          <MenuItem onClick={handleClose} sx={{ color: 'error.main' }}>
-            <ListItemIcon>
-              <LogoutIcon fontSize="small" color="error" />
-            </ListItemIcon>
-            Sair
-          </MenuItem>
-        </Menu>
+            {/* Opções de Tema */}
+            <MenuItem onClick={() => handleThemeChange('light')} selected={mode === 'light'}>
+              <ListItemIcon>
+                <LightModeIcon fontSize="small" />
+              </ListItemIcon>
+              Modo Claro
+            </MenuItem>
 
-      </Toolbar>
-    </MuiAppBar>
-    <Drawer
+            <MenuItem onClick={() => handleThemeChange('dark')} selected={mode === 'dark'}>
+              <ListItemIcon>
+                <DarkModeIcon fontSize="small" />
+              </ListItemIcon>
+              Modo Escuro
+            </MenuItem>
+
+            <Divider />
+
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <SettingsIcon fontSize="small" />
+              </ListItemIcon>
+              Configurações
+            </MenuItem>
+
+            <MenuItem onClick={handleClose} sx={{ color: 'error.main' }}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" color="error" />
+              </ListItemIcon>
+              Sair
+            </MenuItem>
+          </Menu>
+
+        </Toolbar>
+      </MuiAppBar>
+      <Drawer
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Melhor desempenho no mobile
+          keepMounted: true, 
         }}
         sx={{
-          display: { xs: 'block', md: 'none' }, // Só existe no mobile
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
-            width: 280, // Largura do menu lateral
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 280, 
             p: 2,
-            backgroundColor: 'background.paper'
+            backgroundColor: 'background.default'
           },
         }}
       >
-        <Box sx={{ mb: 4, px: 1 }}>
-           {/* Logo ou Título do Menu */}
-           <Typography variant="h5" fontWeight="bold" color="primary">Flugo</Typography>
+        <Box sx={{ mb: 4, mt: 2, px: 1 }}>
+          <Box
+            component="img"
+            src={Logo}
+            alt="Logo Flugo"
+            sx={{
+              height: 40, // Ajuste a altura conforme necessário
+              width: 'auto'
+            }}
+          />
         </Box>
 
         <List>
-          {/* --- O ITEM QUE VOCÊ PEDIU --- */}
           <ListItemButton
-            onClick={() => handleNavigate()} // Navega para Home
+            onClick={() => handleNavigate()}
             sx={{
               borderRadius: '8px',
-              backgroundColor: 'action.selected', // Deixa marcado como ativo
               mb: 1,
               '&:hover': {
                 backgroundColor: 'action.hover',
@@ -207,7 +213,12 @@ export const AppBar = () => {
               <img
                 src={Avatar1}
                 alt="Ícone Colaboradores"
-                style={{ width: '20px', height: '20px' }}
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }}
               />
             </ListItemIcon>
 
@@ -215,8 +226,7 @@ export const AppBar = () => {
               primary="Colaboradores"
               primaryTypographyProps={{
                 variant: 'subtitle1',
-                // No menu ativo, a cor costuma ser primary ou text.primary
-                color: 'text.primary', 
+                color: 'text.primary',
                 fontWeight: 'bold'
               }}
             />
@@ -228,8 +238,6 @@ export const AppBar = () => {
               }}
             />
           </ListItemButton>
-          
-          {/* Você pode adicionar mais itens aqui futuramente */}
         </List>
       </Drawer>
     </>
