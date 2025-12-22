@@ -1,4 +1,4 @@
-import { AppBar as MuiAppBar, Toolbar, Avatar, Box, Typography, Divider, MenuItem, ListItemIcon, Menu, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
+import { AppBar as MuiAppBar, Toolbar, Avatar, Box, Typography, Divider, MenuItem, ListItemIcon, Menu, IconButton, Drawer, List, ListItemButton, ListItemText, ListItem } from '@mui/material';
 import Avatar1 from '../../assets/Img_Avatar.25.png';
 import Logo from '../../assets/flugo_logo 1.svg';
 import { useAppTheme } from '../../theme/ThemeContext';
@@ -10,10 +10,16 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import DomainIcon from '@mui/icons-material/Domain';
+import UsersIcon from '../../assets/icon.svg';
 
 export const AppBar = () => {
   const { mode, toggleTheme } = useAppTheme();
-
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+  
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -39,6 +45,45 @@ export const AppBar = () => {
   const handleNavigate = () => {
     setMobileOpen(false);
   };
+  const handleLogout = async () => {
+    handleClose();
+    try {
+      await logOut();
+      navigate('/login'); // Redireciona para login
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
+  const displayName = user?.displayName || "Usuário";
+  const displayEmail = user?.email || "";
+
+
+  const location = useLocation();
+
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+  const menuItems = [
+    {
+      text: 'Colaboradores',
+      path: '/',
+      icon: (
+        <img
+          src={UsersIcon}
+          alt="Ícone Colaboradores"
+          style={{ width: '20px', height: '20px' }}
+        />
+      )
+    },
+    {
+      text: 'Departamentos',
+      path: '/departamentos',
+      // Como o ícone é do MUI
+      icon: <DomainIcon sx={{ fontSize: 20 }} />
+    }
+  ];
   return (
     <>
       <MuiAppBar
@@ -126,10 +171,10 @@ export const AppBar = () => {
             {/* Cabeçalho do Menu */}
             <Box sx={{ px: 2, py: 1.5 }}>
               <Typography variant="subtitle2" noWrap>
-                Pedro Ferreira
+                {displayName}
               </Typography>
               <Typography variant="body2" color="text.secondary" noWrap>
-                pedro@flugo.com.br
+               {displayEmail}
               </Typography>
             </Box>
 
@@ -159,7 +204,7 @@ export const AppBar = () => {
               Configurações
             </MenuItem>
 
-            <MenuItem onClick={handleClose} sx={{ color: 'error.main' }}>
+            <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
               <ListItemIcon>
                 <LogoutIcon fontSize="small" color="error" />
               </ListItemIcon>
@@ -199,46 +244,57 @@ export const AppBar = () => {
         </Box>
 
         <List>
-          <ListItemButton
-            onClick={() => handleNavigate()}
-            sx={{
-              borderRadius: '8px',
-              mb: 1,
-              '&:hover': {
-                backgroundColor: 'action.hover',
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: '40px' }}>
-              <img
-                src={Avatar1}
-                alt="Ícone Colaboradores"
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
+        {menuItems.map((item) => {
+          const active = isActive(item.path);
+
+          return (
+            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                onClick={() => {navigate(item.path);
+                  handleNavigate();;
                 }}
-              />
-            </ListItemIcon>
+                sx={{
+                  borderRadius: '8px',
+                  backgroundColor: active ? 'rgba(34, 197, 94, 0.08)' : 'transparent', // Verde bem clarinho se ativo
+                  '&:hover': {
+                    backgroundColor: active ? 'rgba(34, 197, 94, 0.16)' : 'grey.100',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: '40px', color: active ? 'primary.main' : 'text.secondary' }}>
+                  {item.icon}
+                </ListItemIcon>
 
-            <ListItemText
-              primary="Colaboradores"
-              primaryTypographyProps={{
-                variant: 'subtitle1',
-                color: 'text.primary',
-                fontWeight: 'bold'
-              }}
-            />
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    variant: 'subtitle2',
+                    fontWeight: active ? 600 : 400,
+                    color: active ? 'primary.main' : 'text.secondary'
+                  }}
+                />
 
-            <KeyboardArrowRightIcon
-              sx={{
-                color: 'text.secondary',
-                fontSize: 20
-              }}
-            />
-          </ListItemButton>
-        </List>
+                {active && (
+                  <KeyboardArrowRightIcon
+                    sx={{
+                      color: 'primary.main',
+                      fontSize: 20
+                    }}
+                  />
+                )}
+                  {!active && (
+                  <KeyboardArrowRightIcon
+                    sx={{
+                      color: 'text.secondary',
+                      fontSize: 20
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
       </Drawer>
     </>
   );
