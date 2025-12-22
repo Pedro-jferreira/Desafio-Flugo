@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Box, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { AddEmployeeHeader } from '../components/add_employee/AddEmployeeHeader';
 import { StepSidebar } from '../components/add_employee/StepSidebar';
 import { BasicInfoStep, ProfessionalInfoStep, } from '../components/add_employee/FormSteps';
 import { FormActions } from '../components/add_employee/FormActions';
-import { Department, Status } from '../types';
+import { Seniority, Status } from '../types';
 import { useAddEmployee } from '../hooks/useEmployees';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { colaboradorSchema, type ColaboradorSchemaType } from '../schema';
+import { colaboradorSchema } from '../schema';
 import { useSnackbar } from 'notistack';
+import { FormHeader } from '../components/core/FormHeader';
 
 const steps = ['Infos Básicas', 'Infos Profissionais'];
 
@@ -20,13 +20,18 @@ export const AddEmployeePage = () => {
   const { addColaborador, loading } = useAddEmployee();
   const { enqueueSnackbar } = useSnackbar();
 
-  const methods = useForm<ColaboradorSchemaType>({
+ const methods = useForm({
     resolver: zodResolver(colaboradorSchema),
     defaultValues: {
       name: '',
       email: '',
       active: true,
-      department: ''
+      departmentId: '',
+      role: '',
+      admissionDate: '',
+      seniority: Seniority.JUNIOR, 
+      managerId: '',
+      baseSalary: 0
     },
     mode: 'all'
   });
@@ -39,7 +44,13 @@ export const AddEmployeePage = () => {
     if (activeStep === 0) {
       isValid = await methods.trigger(['name', 'email']);
     } else if (activeStep === 1) {
-      isValid = await methods.trigger(['department']);
+     isValid = await methods.trigger([
+        'departmentId', 
+        'role', 
+        'seniority', 
+        'admissionDate', 
+        'baseSalary'
+      ]);
     }
 
     if (isValid) {
@@ -48,10 +59,15 @@ export const AddEmployeePage = () => {
 
         try {
           await addColaborador({
-            name: data.name,
+       name: data.name,
             email: data.email,
-            department: data.department as Department,
-            status: data.active ? Status.ATIVO : Status.INATIVO
+            status: data.active ? Status.ATIVO : Status.INATIVO,
+            departmentId: data.departmentId,
+            role: data.role,
+            seniority: data.seniority,
+            admissionDate: data.admissionDate,
+            managerId: data.managerId || undefined, 
+            baseSalary: Number(data.baseSalary)
           });
           enqueueSnackbar('Colaborador cadastrado com sucesso!', {
             variant: 'success'
@@ -96,8 +112,12 @@ export const AddEmployeePage = () => {
           my: '12px',
         }}
       >
-        <AddEmployeeHeader progress={progress} />
-
+       <FormHeader 
+            progress={progress}
+            parentLabel="Colaboradores"
+            parentPath="/"
+            title={"Cadastrar Colaborador"} 
+          />
       
 
         <Box

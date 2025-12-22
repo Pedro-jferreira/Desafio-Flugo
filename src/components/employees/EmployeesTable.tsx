@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -10,23 +10,31 @@ import {
   Box,
   Typography,
   Skeleton,
-  CircularProgress
+  CircularProgress,
+  Tooltip,
+  IconButton,
+  alpha,
+  Checkbox
 } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'; // Ícone de erro
 import { EmployeeRow } from './EmployeeRow';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { type Employee } from '../../types';
 import type { OrderDirection, SortField } from '../../hooks/useEmployees';
 
 interface EmployeesTableProps {
   employees: Employee[];
   isLoading: boolean;
-  error?: string | null;     // Novo: Prop de erro
-  orderBy: SortField | null;        // Novo: Qual campo está ordenado
-  orderDirection: OrderDirection; // Novo: Direção
-  onSort: (field: SortField) => void; // Novo: Função para ordenar
-  onLoadMore: () => void;    // Novo: Função para carregar mais
-  hasMore: boolean;          // Novo: Tem mais dados?
+  error?: string | null;    
+  orderBy: SortField | null;      
+  orderDirection: OrderDirection; 
+  onSort: (field: SortField) => void;
+  onLoadMore: () => void;    
+  hasMore: boolean;         
+  onDelete: (ids: string[]) => void;
+  onEdit: (id: string) => void;
+  departmentsMap: Record<string, string>;
 }
 
 export const ColaboradoresTable = ({ 
@@ -37,8 +45,48 @@ export const ColaboradoresTable = ({
   orderDirection,
   onSort,
   onLoadMore,
-  hasMore
+  hasMore,
+  onDelete,
+  onEdit,
+  departmentsMap
 }: EmployeesTableProps) => {
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelecteds = employees.map((n) => n.id);
+      setSelectedIds(newSelecteds);
+      return;
+    }
+    setSelectedIds([]);
+  };
+
+  const handleClick = (id: string) => {
+    const selectedIndex = selectedIds.indexOf(id);
+    let newSelected: string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedIds, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedIds.slice(1));
+    } else if (selectedIndex === selectedIds.length - 1) {
+      newSelected = newSelected.concat(selectedIds.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedIds.slice(0, selectedIndex),
+        selectedIds.slice(selectedIndex + 1),
+      );
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const isSelected = (id: string) => selectedIds.indexOf(id) !== -1;
+
+  const handleDeleteSelected = () => {
+    onDelete(selectedIds);
+    setSelectedIds([]); // Limpa seleção após deletar
+  };
 
   // --- Lógica de Infinite Scroll (Observer Nativo) ---
   const observerTarget = useRef(null);
@@ -102,9 +150,10 @@ export const ColaboradoresTable = ({
   };
 
   const isInitialLoading = isLoading && employees.length === 0;
-
+const numSelected = selectedIds.length;
+  const rowCount = employees.length;
   return (
-    <TableContainer
+     <TableContainer
       component={Paper}
       elevation={0}
       sx={{
@@ -114,6 +163,22 @@ export const ColaboradoresTable = ({
         boxShadow: '0px 0px 2px 0px rgba(145, 158, 171, 0.20), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)'
       }}
     >
+      {numSelected > 0 && (
+        <Box sx={{
+          pl: 2, pr: 1, py: 2,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08)
+        }}>
+          <Typography color="primary" variant="subtitle1" component="div">
+            {numSelected} selecionado(s)
+          </Typography>
+          <Tooltip title="Excluir Selecionados">
+            <IconButton onClick={handleDeleteSelected}>
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
       <Table
         sx={{
           width: '100%',
@@ -124,14 +189,23 @@ export const ColaboradoresTable = ({
       >
         <TableHead sx={{ backgroundColor: 'background.neutral' }}>
           <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                color="primary"
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={handleSelectAllClick}
+              />
+            </TableCell>
             <TableCell sx={{ width: '30%' }}><HeaderItem label="Nome" property="name" /></TableCell>
-            <TableCell sx={{ width: '30%' }}><HeaderItem label="Email" property="email" /></TableCell>
-            <TableCell sx={{ width: '20%' }}><HeaderItem label="Departamento" property="department" /></TableCell>
-            <TableCell align="right" sx={{ width: '20%' }}>
+            <TableCell sx={{ width: '25%' }}><HeaderItem label="Email" property="email" /></TableCell>
+            <TableCell sx={{ width: '20%' }}><HeaderItem label="Departamento" property="departmentId" /></TableCell>
+            <TableCell align="right" sx={{ width: '15%' }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <HeaderItem label="Status" property="status" />
               </Box>
             </TableCell>
+            <TableCell align="right" sx={{ width: '10%' }} /> {/* Coluna Vazia para Menu */}
           </TableRow>
         </TableHead>
 
@@ -170,10 +244,22 @@ export const ColaboradoresTable = ({
           ) : (
             /* 4. LISTA DE DADOS + SCROLL INFINITO */
             <>
-              {employees.map((colaborador, index) => (
-                <EmployeeRow key={colaborador.id} data={colaborador} index={ index} />
-              ))}
-              
+             {employees.map((colaborador, index) => {
+                const isItemSelected = isSelected(colaborador.id);
+                const deptName = departmentsMap[colaborador.departmentId] || 'Sem Departamento';
+                return (
+                  <EmployeeRow 
+                    key={colaborador.id} 
+                    data={colaborador} 
+                    index={index} 
+                    selected={isItemSelected}
+                    onSelect={handleClick}
+                    onDelete={(id) => onDelete([id])}
+                    onEdit={onEdit}
+                    departmentName={deptName}
+                  />
+                );
+              })}
               {/* ELEMENTO SENTINELA (Scroll Trigger) */}
               {hasMore && (
                  <TableRow ref={observerTarget}>

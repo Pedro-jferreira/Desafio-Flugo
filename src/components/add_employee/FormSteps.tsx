@@ -1,9 +1,11 @@
 import { Controller, useFormContext } from "react-hook-form";
 import type { ColaboradorSchemaType } from "../../schema";
-import { FormControl, FormControlLabel, FormHelperText, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
+import { CircularProgress, FormControl, FormControlLabel, FormHelperText, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { IOSSwitch } from "../core/IOSSwitch";
-import { Department } from "../../types";
-import { useRef } from "react";
+import { type Department, Seniority, type Employee } from "../../types";
+import { useEffect, useRef, useState } from "react";
+import { DepartmentService } from "../../services/DepartamentService";
+import { EmployeeService } from "../../services/EmployeeService";
 
 export const BasicInfoStep = () => {
   const { register, control, formState: { errors } } = useFormContext<ColaboradorSchemaType>();
@@ -98,46 +100,175 @@ export const BasicInfoStep = () => {
   );
 };
 export const ProfessionalInfoStep = () => {
-  const { control, formState: { errors } } = useFormContext<ColaboradorSchemaType>();
+  const { register, control, formState: { errors } } = useFormContext<ColaboradorSchemaType>();
+
+  // Estados para listas dinâmicas
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [managers, setManagers] = useState<Employee[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Carregar Departamentos e Possíveis Gestores
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [depts, employeesResult] = await Promise.all([
+          DepartmentService.getAll(),
+          EmployeeService.getAll({ pageSize: 100 }) 
+        ]);
+
+        setDepartments(depts);
+        
+        const gestores = employeesResult.data.filter(emp => emp.seniority === Seniority.GESTOR);
+        setManagers(gestores);
+
+      } catch (error) {
+        console.error("Erro ao carregar dados profissionais:", error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loadingData) {
+    return <Stack alignItems="center" py={4}><CircularProgress /></Stack>;
+  }
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4" color="text.secondary">
+      <Typography variant="h6" color="text.secondary">
         Informações Profissionais
       </Typography>
 
-      <Controller
-        name="department"
-        control={control}
-        render={({ field }) => (
-          <FormControl fullWidth error={!!errors.department}>
-            <InputLabel
-              id="departamento-label"
-              sx={{
-                color: 'text.disabled',
-                '&.Mui-focused': { color: 'primary.main' },
-              }}
-            >
-              Selecione um departamento
-            </InputLabel>
+      {/* --- CARGO --- */}
+      <TextField
+        label="Cargo"
+        fullWidth
+        placeholder="Ex: Desenvolvedor Full Stack"
+        InputLabelProps={{ shrink: true }}
+        {...register('role')}
+        error={!!errors.role}
+        helperText={errors.role?.message}
+      />
 
-            <Select
-              {...field} // Passa value, onChange, onBlur automaticamente
-              labelId="departamento-label"
-              label="Selecione um departamento"
-            >
-              <MenuItem value={Department.TI}>TI</MenuItem>
-              <MenuItem value={Department.DESIGN}>Design</MenuItem>
-              <MenuItem value={Department.MARKETING}>Marketing</MenuItem>
-              <MenuItem value={Department.PRODUTO}>Produto</MenuItem>
-            </Select>
-
-            {errors.department && (
-              <FormHelperText>{errors.department.message}</FormHelperText>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        
+        {/* --- DEPARTAMENTO (Dinâmico) --- */}
+        <Controller
+            name="departmentId"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+            <FormControl fullWidth error={!!errors.departmentId}>
+                <InputLabel id="dept-label">Departamento</InputLabel>
+                <Select
+                    {...field}
+                    labelId="dept-label"
+                    label="Departamento"
+                >
+                <MenuItem value="" disabled>Selecione...</MenuItem>
+                {departments.map((dept) => (
+                    <MenuItem key={dept.id} value={dept.id}>
+                    {dept.name}
+                    </MenuItem>
+                ))}
+                </Select>
+                {errors.departmentId && (
+                <FormHelperText>{errors.departmentId.message}</FormHelperText>
+                )}
+            </FormControl>
             )}
+        />
+
+        {/* --- SENIORIDADE (Enum) --- */}
+        <Controller
+            name="seniority"
+            control={control}
+            defaultValue={Seniority.JUNIOR} // Valor padrão seguro
+            render={({ field }) => (
+            <FormControl fullWidth error={!!errors.seniority}>
+                <InputLabel id="seniority-label">Nível Hierárquico</InputLabel>
+                <Select
+                    {...field}
+                    labelId="seniority-label"
+                    label="Nível Hierárquico"
+                >
+                {Object.values(Seniority).map((level) => (
+                    <MenuItem key={level} value={level}>
+                    {level}
+                    </MenuItem>
+                ))}
+                </Select>
+                {errors.seniority && (
+                <FormHelperText>{errors.seniority.message}</FormHelperText>
+                )}
+            </FormControl>
+            )}
+        />
+      </Stack>
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        
+        {/* --- DATA DE ADMISSÃO --- */}
+        <TextField
+            label="Data de Admissão"
+            type="date"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            {...register('admissionDate')}
+            error={!!errors.admissionDate}
+            helperText={errors.admissionDate?.message}
+        />
+
+        {/* --- SALÁRIO BASE --- */}
+        <TextField
+            label="Salário Base"
+            fullWidth
+            type="number"
+            placeholder="0,00"
+            InputLabelProps={{ shrink: true }}
+            {...register('baseSalary')}
+            error={!!errors.baseSalary}
+            helperText={errors.baseSalary?.message}
+            slotProps={{
+                input: {
+                    startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                }
+            }}
+        />
+      </Stack>
+
+      {/* --- GESTOR RESPONSÁVEL --- */}
+      <Controller
+        name="managerId"
+        control={control}
+        defaultValue="" 
+        render={({ field }) => (
+          <FormControl fullWidth error={!!errors.managerId}>
+            <InputLabel id="manager-label" shrink>Gestor Responsável</InputLabel>
+            <Select
+              {...field}
+              labelId="manager-label"
+              label="Gestor Responsável"
+              displayEmpty
+            >
+              <MenuItem value="">
+                <em>Sem gestor (ou definir depois)</em>
+              </MenuItem>
+              {managers.map((manager) => (
+                <MenuItem key={manager.id} value={manager.id}>
+                  {manager.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+                {errors.managerId ? errors.managerId.message : "Selecione um colaborador com nível de Gestor"}
+            </FormHelperText>
           </FormControl>
         )}
       />
+
     </Stack>
   );
 };

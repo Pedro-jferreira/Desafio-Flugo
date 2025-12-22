@@ -79,6 +79,21 @@ export const useEmployees = () => {
     setLastDoc(null);
     fetchEmployees(false);
   };
+  const removeEmployees = async (ids: string[]) => {
+    try {
+        if (ids.length === 1) {
+            await EmployeeService.delete(ids[0]);
+        } else {
+            await EmployeeService.deleteBatch(ids);
+        }
+        
+        setEmployees(current => current.filter(emp => !ids.includes(emp.id)));
+        
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+  };
 
   return {
     employees, 
@@ -89,7 +104,8 @@ export const useEmployees = () => {
     orderDirection,
     handleSort,
     loadMore,
-    refresh
+    refresh,
+    removeEmployees
   };
 };
 
@@ -116,4 +132,36 @@ export const useAddEmployee = () => {
     loading,
     error
   };
+};
+
+export const useUpdateEmployee = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const getColaborador = async (id: string) => {
+    setLoading(true);
+    try {
+      return await EmployeeService.getById(id);
+    } catch (err) {
+      setError('Erro ao buscar dados.');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateColaborador = async (id: string, data: Partial<Employee>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await EmployeeService.update(id, data);
+    } catch (err) {
+      setError('Erro ao atualizar.');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { getColaborador, updateColaborador, loading, error };
 };
