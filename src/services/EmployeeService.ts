@@ -9,7 +9,12 @@ import {
   type DocumentData, 
   QueryDocumentSnapshot, 
   where,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  deleteDoc,
+  writeBatch,
+  updateDoc,
+  getDoc
 } from "firebase/firestore";
 
 import type { Employee } from "../types"; 
@@ -81,4 +86,53 @@ export const EmployeeService = {
       throw error;
     }
   },
+  delete: async (id: string): Promise<void> => {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Erro ao deletar colaborador:", error);
+      throw error;
+    }
+  },
+  deleteBatch: async (ids: string[]): Promise<void> => {
+    try {
+      const batch = writeBatch(db);
+      ids.forEach((id) => {
+        const docRef = doc(db, COLLECTION_NAME, id);
+        batch.delete(docRef);
+      });
+      await batch.commit();
+    } catch (error) {
+      console.error("Erro ao deletar em massa:", error);
+      throw error;
+    }
+  },
+
+getById: async (id: string): Promise<Employee | null> => {
+  try {
+    const docRef = doc(db, "employees", id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as Employee;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar colaborador por ID:", error);
+    throw error;
+  }
+},
+
+update: async (id: string, employee: Partial<Employee>): Promise<void> => {
+  try {
+    const docRef = doc(db, "employees", id);
+    const cleanData = JSON.parse(JSON.stringify(employee)); 
+    await updateDoc(docRef, cleanData);
+  } catch (error) {
+    console.error("Erro ao atualizar colaborador:", error);
+    throw error;
+  }
+}
 };
