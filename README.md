@@ -23,36 +23,43 @@ O objetivo foi desenvolver uma aplicação Single Page Application (SPA) seguind
 
 ## ✨ Funcionalidades Implementadas
 
-### 1. Listagem de Colaboradores (Employees List)
-* **🔄 Infinite Scroll:** Carregamento de dados sob demanda ao rolar a página (substituindo a paginação tradicional para melhor experiência mobile).
-* **Sorter Interativo:** Ordenação dinâmica (Backend-side) por Nome, Email ou Departamento.
-* **Feedback Visual:** Uso de *Skeletons* durante o carregamento e tratamento de erros amigável.
-* **Avatares Dinâmicos:** Geração visual sequencial de avatares na listagem.
+### 🔐 1. Autenticação e Segurança
+* **Login & Registro:** Sistema completo de autenticação via Firebase Auth (Email/Senha).
+* **Rotas Protegidas:** Implementação de `PrivateRoute` para impedir acesso não autorizado às áreas internas.
+* **Gestão de Sessão:** Persistência automática de login e Logout seguro.
 
-### 2. Cadastro (Wizard Form)
-* **📍 Navegação por Etapas:** Separação clara entre "Informações Básicas" e "Informações Profissionais".
-* **🛡️ Validação Robusta:** Uso de **Zod** + **React Hook Form**.
-  * Validação de formato de e-mail.
-  * Campos obrigatórios.
-  * Verificação em tempo real.
-* **🚫 Prevenção de Duplicidade:** O sistema verifica automaticamente no Firebase se o e-mail já existe antes de salvar, retornando feedback visual e levando o usuário ao campo com erro.
-* **💾 Persistência:** Dados salvos em tempo real no **Firebase Firestore**.
+### 👥 2. Gestão de Colaboradores (CRUD Completo)
+* **Listagem Otimizada:**
+    * **Infinite Scroll:** Carregamento sob demanda via Intersection Observer.
+    * **Sorter Backend-side:** Ordenação por Nome, Email ou Status.
+    * **Ações Rápidas:** Menu de contexto para Editar ou Excluir.
+    * **Seleção em Massa:** Checkboxes para exclusão de múltiplos registros via Batch Transaction.
+* **Cadastro e Edição (Wizard):**
+    * Formulário multi-etapa para UX fluida.
+    * **Novos Campos Profissionais:** Cargo, Salário (com máscara), Data de Admissão, Senioridade e Vínculo com Gestor.
+    * Validação em tempo real de e-mails duplicados no banco.
+
+### 🏢 3. Gestão de Departamentos (Regra de Negócio Avançada)
+* **Estrutura Organizacional:** Criação de departamentos com definição de Gestor Responsável.
+* **Inclusão Inteligente:** Ao criar um departamento, é possível selecionar múltiplos colaboradores existentes para movê-los automaticamente para a nova área.
+* **Migração Obrigatória (Safe Delete):**
+    * O sistema impede que colaboradores fiquem "órfãos" (sem departamento).
+    * Ao tentar excluir um departamento com membros ativos, um **Modal de Migração** é acionado, forçando o usuário a escolher um novo destino para a equipe antes de concluir a exclusão.
 
 ## 🛠️ Tecnologias Utilizadas
 
 O projeto utiliza uma stack moderna (2025 ready):
 
-| Categoria | Tecnologia | Descrição |
+| Categoria | Tecnologia | Uso no Projeto |
 | :--- | :--- | :--- |
-| **Core** | [React 19](https://react.dev/) | Biblioteca UI moderna. |
-| **Build Tool** | [Vite](https://vitejs.dev/) | Ambiente de desenvolvimento ultra-rápido. |
-| **Linguagem** | [TypeScript](https://www.typescriptlang.org/) | Superset JS para tipagem estática e segurança. |
-| **UI Framework** | [Material UI](https://mui.com/) | Componentes de interface baseados no Material Design. |
-| **Gerência de Estado** | [React Hook Form](https://react-hook-form.com/) | Controle de formulários performático e sem re-renders desnecessários. |
-| **Validação** | [Zod](https://zod.dev/) | Schema Validation integrado ao TypeScript. |
-| **Backend/DB** | [Firebase](https://firebase.google.com/) | Firestore (NoSQL) e Hosting. |
-| **Notificações** | [Notistack](https://notistack.com/) | Sistema de Toasts (Snackbars) empilháveis. |
-| **Roteamento** | [React Router v7](https://reactrouter.com/) | Navegação SPA. |
+| **Core** | [React 19](https://react.dev/) | Biblioteca UI com Hooks personalizados. |
+| **Linguagem** | [TypeScript](https://www.typescriptlang.org/) | Tipagem estrita para maior segurança e DX. |
+| **UI Kit** | [Material UI (MUI)](https://mui.com/) | Design System completo e customizado. |
+| **Forms** | [React Hook Form](https://react-hook-form.com/) | Gerenciamento de estado de formulários complexos. |
+| **Validação** | [Zod](https://zod.dev/) | Schemas de validação robustos e tipados. |
+| **Backend** | [Firebase](https://firebase.google.com/) | Auth, Firestore (NoSQL) e Hosting. |
+| **Routing** | [React Router v6](https://reactrouter.com/) | Navegação SPA e proteção de rotas. |
+| **Feedback** | [Notistack](https://notistack.com/) | Sistema de notificações (Toasts/Snackbars). |
 
 ## 🚀 Como rodar o projeto localmente
 
@@ -99,17 +106,22 @@ A arquitetura foi pensada para escalabilidade, separando responsabilidades e uti
 
 ```Plaintext
 src/
-├── assets/             # Imagens e ícones estáticos
-├── components/         # Componentes React reutilizáveis
-│   ├── add_employees/  # Componentes específicos do Wizard de cadastro
-│   ├── core/           # Componentes base (ex: IOSSwitch customizado)
-│   └── employees/      # Componentes da listagem (Tabela, Linhas)
-├── hooks/              # Custom Hooks (useEmployees, useAddEmployee)
-├── pages/              # Páginas da aplicação (EmployeesPage, AddEmployeePage)
-├── services/           # Camada de comunicação com Firebase
-├── theme/              # Customização do tema Material UI
-├── types.ts            # Interfaces e Tipos TypeScript globais
-└── main.tsx            # Ponto de entrada da aplicação
+├── assets/             # Recursos estáticos
+├── components/         
+│   ├── add_department/ # Wizard e Dialogs de Departamento
+│   ├── add_employee/   # Wizard de Colaboradores
+│   ├── core/           # Componentes genéricos (FormHeader, Loaders)
+│   ├── departments/    # Tabelas e linhas de departamentos
+│   ├── employees/      # Tabelas e linhas de colaboradores
+│   └── layout/         # Sidebar e MainLayout
+├── contexts/           # AuthContext (Gestão de usuário logado)
+├── hooks/              # Custom Hooks (useEmployees, useDepartments, etc.)
+├── pages/              # Telas da aplicação (Login, Lists, Adds, Updates)
+├── routing/            # Configuração de Rotas e PrivateRoute
+├── schema/             # Schemas Zod (DepartmentSchema, EmployeeSchema)
+├── services/           # Camada de API (Firebase Service Pattern)
+├── theme/              # Customização do MUI
+└── types/              # Interfaces Globais (TS)
 ```
 
 Desenvolvido por Pedro Ferreira 👨‍🍳💻
