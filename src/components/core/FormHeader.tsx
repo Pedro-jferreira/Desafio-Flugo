@@ -1,11 +1,14 @@
 import { Box, Breadcrumbs, Link, Typography, LinearProgress } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface AddEmployeeHeaderProps {
+interface FormHeaderProps {
   progress: number;
+  parentLabel: string; // Ex: "Colaboradores" ou "Departamentos"
+  parentPath: string;  // Ex: "/" ou "/departamentos"
+  title: string;       // Ex: "Cadastrar Colaborador" ou "Novo Departamento"
 }
 
-export const AddEmployeeHeader = ({ progress }: AddEmployeeHeaderProps) => {
+export const FormHeader = ({ progress, parentLabel, parentPath, title }: FormHeaderProps) => {
   
   const SeparatorDot = () => (
     <Box 
@@ -34,22 +37,23 @@ export const AddEmployeeHeader = ({ progress }: AddEmployeeHeaderProps) => {
       >
         <Link 
           component={RouterLink} 
-          to="/" 
+          to={parentPath} 
           underline="hover" 
           variant="body2"       
           color="text.primary"  
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          Colaboradores
+          {parentLabel}
         </Link>
         
         <Typography 
           variant="body2"       
           color="text.disabled" 
         >
-          Cadastrar Colaborador
+          {title}
         </Typography>
       </Breadcrumbs>
+
       <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <LinearProgress 
           variant="determinate" 
@@ -69,7 +73,6 @@ export const AddEmployeeHeader = ({ progress }: AddEmployeeHeaderProps) => {
         <Typography 
           variant="caption"      
           color="text.secondary"  
-          
         >
           {progress}%
         </Typography>

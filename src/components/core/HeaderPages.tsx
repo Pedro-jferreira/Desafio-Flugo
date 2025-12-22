@@ -1,10 +1,12 @@
 import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
 
-interface EmployeesHeaderProps {
+interface HeaderProps {
     onNewClick?: () => void;
+    title: String;
+    buttonText: String
 }
 
-export const EmployeesHeader = ({ onNewClick }: EmployeesHeaderProps) => {
+export const HeaderPages = ({ onNewClick, title,buttonText }: HeaderProps) => {
     const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -21,7 +23,7 @@ export const EmployeesHeader = ({ onNewClick }: EmployeesHeaderProps) => {
             <Typography
                 variant="h4"
             >
-                Colaboradores
+                {title}
             </Typography>
 
             <Button
@@ -30,7 +32,7 @@ export const EmployeesHeader = ({ onNewClick }: EmployeesHeaderProps) => {
                 size={isMobile ? 'medium' : 'large'}
                 onClick={onNewClick}
             >
-                Novo Colaborador
+                {buttonText}
             </Button>
         </Box>
     );
